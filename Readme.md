@@ -1,3 +1,23 @@
-# 屌炸天聊天系统
-屌炸天聊天系统是专门为程序员设计的在线聊天系统。它集成了聊天、markdown、
-代码高亮、文件传输等功能，立志于服务每一个程序员，让交流更加迅捷，让代码一目了然。
+# chat-web
+
+## introduction
+
+> chat-web is a friendly chat system to programmer. 
+
+## Build Setup
+
+``` bash
+# install dependencies
+npm install
+
+# serve with hot reload at localhost:8080
+npm run dev
+
+# build for production with minification
+npm run build
+
+# build for production and view the bundle analyzer report
+npm run build --report
+```
+
+For detailed explanation on how things work, checkout the [guide](http://vuejs-templates.github.io/webpack/) and [docs for vue-loader](http://vuejs.github.io/vue-loader).
