@@ -15,17 +15,21 @@
     </div>
 </template>
 <script>
+    import api from "../service/api"
+    let a = () => {
+
+    }
     export default {
         name: "hello",
-        methods: {
-            tryLogin: (e) => {
-
-            }
-        },
         data () {
             return {
-                email: "",
+                email: "hello world",
                 password: ""
+            }
+        },
+        methods: {
+            tryLogin () {
+                api.post("http://api.scrm.weisgj.com/user/get_token", {email: this.email, password: this.password})
             }
         }
     }
@@ -35,51 +39,41 @@
         text-align: center;
         margin: 40px 0;
     }
-
     .form {
         margin: 20px auto;
         width: 400px;
         overflow: hidden;
-    }
-
-    .form .form-control {
-        input{
-            font-style: italic;
+        .form-control {
+            &:not(:last-of-type){
+                margin-top: 40px;
+            }
+            input {
+                height: 50px;
+                line-height: 50px;
+                text-indent: 8px;
+                width: 100%;
+                border: 1px solid #ddd;
+                outline: none;
+                -webkit-box-sizing: border-box;
+                -moz-box-sizing: border-box;
+                box-sizing: border-box;
+                font-size: 18px;
+                border-radius: 2px;
+                :focus{
+                    border: 1px solid #bbb;
+                }
+            }
         }
-    }
-
-    .form .form-control:not(:last-of-type) {
-        margin-top: 40px;
-    }
-
-    .form .form-control input {
-        height: 50px;
-        line-height: 50px;
-        text-indent: 8px;
-        width: 100%;
-        border: 1px solid #ddd;
-        outline: none;
-        -webkit-box-sizing: border-box;
-        -moz-box-sizing: border-box;
-        box-sizing: border-box;
-        font-size: 18px;
-        border-radius: 2px;
-    }
-
-    .form .form-control input:focus {
-        border: 1px solid #bbb;
-    }
-
-    .form .btn {
-        display: block;
-        text-align: center;
-        height: 50px;
-        line-height: 50px;
-        margin-top: 40px;
-    }
-
-    .form .btn.btn-success {
-        background: #2ab27b;
-        color: #fff;
+        .btn {
+            display: block;
+            text-align: center;
+            height: 50px;
+            line-height: 50px;
+            margin-top: 40px;
+        }
+        .btn.btn-success {
+            background: #2ab27b;
+            color: #fff;
+        }
     }
 </style>

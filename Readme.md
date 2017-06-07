@@ -1,8 +1,8 @@
 # chat-web
 
-## introduction
+## Introduction
 
-> chat-web is a friendly chat system to programmer. 
+> Chat-web is a friendly chat system to programmer. 
 
 ## Build Setup
 
