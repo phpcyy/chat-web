@@ -1,17 +1,29 @@
-import 'whatwg-fetch'
+import axios from 'axios';
+import querystring from 'querystring'
 
-let api = fetch;
-api.post = function (uri, data) {
-    console.log(uri)
-    return fetch('http://api.scrm.weisgj.com/user/get_token', {
-        method: "POST",
-        headers: {
-            "Content-Type": "application/x-www-form-urlencoded"
-        },
-        mode: "cors",
-        body: "email=phpcyy@163.com&password=654321"
-    })
+let api = {};
+
+axios.defaults.baseURL = 'http://www.gonever.com';
+if (localStorage.getItem("AUTH_TOKEN")) {
+    axios.defaults.headers.common['Authorization'] = localStorage.getItem("AUTH_TOKEN");
 }
 
 
+api.post = function (uri, data = {}) {
+    return axios.post(uri, querystring.stringify(data)).catch(function (error) {
+        alert(error)
+    })
+};
+
+api.get = function (uri, data = {}) {
+    let param = querystring.stringify(data);
+    uri = param ? uri : uri + "?" + param;
+    return axios.get(uri).catch(function (error) {
+        alert(error)
+    })
+};
+
 export default api
+
+
+

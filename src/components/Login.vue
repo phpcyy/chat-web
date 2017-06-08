@@ -23,13 +23,19 @@
         name: "hello",
         data () {
             return {
-                email: "hello world",
+                email: "",
                 password: ""
             }
         },
         methods: {
             tryLogin () {
-                api.post("http://api.scrm.weisgj.com/user/get_token", {email: this.email, password: this.password})
+                api.get("/user/login").then(function (rep) {
+                    if (rep.status === 200){
+                        console.log(rep.data.data.token)
+                    }else{
+                        alert(rep.statusText)
+                    }
+                })
             }
         }
     }
@@ -39,12 +45,13 @@
         text-align: center;
         margin: 40px 0;
     }
+
     .form {
         margin: 20px auto;
         width: 400px;
         overflow: hidden;
         .form-control {
-            &:not(:last-of-type){
+            &:not(:last-of-type) {
                 margin-top: 40px;
             }
             input {
@@ -59,7 +66,7 @@
                 box-sizing: border-box;
                 font-size: 18px;
                 border-radius: 2px;
-                :focus{
+                :focus {
                     border: 1px solid #bbb;
                 }
             }
