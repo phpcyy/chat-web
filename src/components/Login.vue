@@ -27,7 +27,10 @@
     },
     methods: {
       tryLogin () {
-        api.get("/user/login").then(function (rep) {
+        api.post("/user/login", {
+            email: this.email,
+            password: this.password
+        }).then(function (rep) {
           if (rep.status === 200) {
             console.log(rep.data.data.token)
           } else {

@@ -8,7 +8,6 @@ if (localStorage.getItem("AUTH_TOKEN")) {
   axios.defaults.headers.common['Authorization'] = localStorage.getItem("AUTH_TOKEN");
 }
 
-
 api.post = function (uri, data = {}) {
   return axios.post(uri, querystring.stringify(data)).catch(function (error) {
     alert(error)
@@ -17,7 +16,7 @@ api.post = function (uri, data = {}) {
 
 api.get = function (uri, data = {}) {
   let param = querystring.stringify(data);
-  uri = param ? uri : uri + "?" + param;
+  uri = param ? uri + "?" + param:uri;
   return axios.get(uri).catch(function (error) {
     alert(error)
   })
