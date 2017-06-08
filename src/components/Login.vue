@@ -16,9 +16,7 @@
 </template>
 <script>
     import api from "../service/api"
-    let a = () => {
 
-    }
     export default {
         name: "hello",
         data () {
