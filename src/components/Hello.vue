@@ -1,22 +1,17 @@
 <template>
   <div class="hello">
-    <h1>{{ msg }}</h1>
-    <h2>Essential Links</h2>
-    <ul>
-      <li><a href="https://vuejs.org" target="_blank">Core Docs</a></li>
-      <li><a href="https://forum.vuejs.org" target="_blank">Forum</a></li>
-      <li><a href="https://gitter.im/vuejs/vue" target="_blank">Gitter Chat</a></li>
-      <li><a href="https://twitter.com/vuejs" target="_blank">Twitter</a></li>
-      <br>
-      <li><a href="http://vuejs-templates.github.io/webpack/" target="_blank">Docs for This Template</a></li>
-    </ul>
-    <h2>Ecosystem</h2>
-    <ul>
-      <li><a href="http://router.vuejs.org/" target="_blank">vue-router</a></li>
-      <li><a href="http://vuex.vuejs.org/" target="_blank">vuex</a></li>
-      <li><a href="http://vue-loader.vuejs.org/" target="_blank">vue-loader</a></li>
-      <li><a href="https://github.com/vuejs/awesome-vue" target="_blank">awesome-vue</a></li>
-    </ul>
+    <h1>Go 语言聊天室</h1>
+    <div class="form">
+      <div class="form-control">
+        <input type="text" placeholder="输入您的昵称">
+      </div>
+      <div class="form-control">
+        <input type="file" placeholder="选择头像">
+      </div>
+      <div class="btn btn-success">
+        开始聊天吧！
+      </div>
+    </div>
   </div>
 </template>
 
@@ -32,22 +27,56 @@
 </script>
 
 <!-- Add "scoped" attribute to limit CSS to this component only -->
-<style scoped>
-  h1, h2 {
-    font-weight: normal;
+<style scoped lang="less">
+  h1 {
+    text-align: center;
+    margin: 40px 0;
+    border: none;
   }
-
-  ul {
-    list-style-type: none;
-    padding: 0;
-  }
-
-  li {
-    display: inline-block;
-    margin: 0 10px;
-  }
-
-  a {
-    color: #42b983;
+  .form {
+    overflow: hidden;
+    margin: 20px auto;
+    width: 400px;
+    overflow: hidden;
+    .form-tip {
+      font-size: 14px;
+      text-align: right;
+      text-indent: 20px;
+      color: #3684FD;
+      cursor: pointer;
+      margin-top: 20px;
+    }
+    .form-control {
+      &:not(:last-of-type) {
+        margin-top: 40px;
+      }
+      input {
+        height: 50px;
+        line-height: 50px;
+        text-indent: 8px;
+        width: 100%;
+        border: 1px solid #ddd;
+        outline: none;
+        -webkit-box-sizing: border-box;
+        -moz-box-sizing: border-box;
+        box-sizing: border-box;
+        font-size: 18px;
+        border-radius: 2px;
+        &:focus {
+          border: 1px solid #bbb;
+        }
+      }
+    }
+    .btn {
+      display: block;
+      text-align: center;
+      height: 50px;
+      line-height: 50px;
+      margin-top: 40px;
+    }
+    .btn.btn-success {
+      background: #2ab27b;
+      color: #fff;
+    }
   }
 </style>
