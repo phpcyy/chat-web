@@ -1,15 +1,30 @@
 <template>
-  <div class="login">
-    <h1>登录 LetChat</h1>
-    <div class="form">
-      <div class="form-control">
-        <input type="text" v-model="email" placeholder="用户名">
+  <div id="login">
+    <div class="login" v-show="status == 1">
+      <h1>登录 LetChat</h1>
+      <div class="form">
+        <div class="form-control">
+          <input type="text" v-model="email" placeholder="邮箱">
+        </div>
+        <div class="form-control">
+          <input type="password" v-model="password" placeholder="密码">
+        </div>
+        <div class="btn btn-success" @click="tryLogin">
+          登录
+        </div>
+        <p class="form-tip" @click="switchStatus(2)">没有账号？注册一个！</p>
       </div>
-      <div class="form-control">
-        <input type="password" v-model="password" placeholder="密码">
-      </div>
-      <div class="btn btn-success" v-on:click="tryLogin">
-        登录
+    </div>
+    <div class="register" v-show="status == 2">
+      <h1>加入 LetChat</h1>
+      <div class="form">
+        <div class="form-control">
+          <input type="text" v-model="email" placeholder="邮箱">
+        </div>
+        <div class="btn btn-success" @click="tryLogin">
+          发送邮件
+        </div>
+        <p class="form-tip" @click="switchStatus(1)">已有账号？直接登录！</p>
       </div>
     </div>
   </div>
@@ -22,14 +37,18 @@
     data () {
       return {
         email: "",
-        password: ""
+        password: "",
+        status: 1
       }
     },
     methods: {
+      switchStatus (status) {
+          this.status = status
+      },
       tryLogin () {
         api.post("/user/login", {
-            email: this.email,
-            password: this.password
+          email: this.email,
+          password: this.password
         }).then(function (rep) {
           if (rep.status === 200) {
             console.log(rep.data.data.token)
@@ -51,6 +70,14 @@
     margin: 20px auto;
     width: 400px;
     overflow: hidden;
+    .form-tip{
+      font-size: 14px;
+      text-align: right;
+      text-indent: 20px;
+      color: #3684FD;
+      cursor: pointer;
+      margin-top: 20px;
+    }
     .form-control {
       &:not(:last-of-type) {
         margin-top: 40px;
@@ -67,7 +94,7 @@
         box-sizing: border-box;
         font-size: 18px;
         border-radius: 2px;
-        :focus {
+        &:focus {
           border: 1px solid #bbb;
         }
       }
