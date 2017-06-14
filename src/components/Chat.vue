@@ -6,11 +6,13 @@
     <div class="message-wrapper">
       <div class="message-list">
         <div v-for="message in messages">
-          <div class="message">
+          <div v-if="message.username != username" class="message">
             <img class="avatar" v-bind:src="'http://localhost:10080/' + message.headimgurl" alt="">
-            <div class="message-content" v-html="message.message">
-
-            </div>
+            <div class="message-content" v-html="message.message"></div>
+          </div>
+          <div v-if="message.username == username" class="message-mine">
+            <img class="avatar" v-bind:src="'http://localhost:10080/' + message.headimgurl" alt="">
+            <div class="message-content" v-html="message.message"></div>
           </div>
         </div>
       </div>
@@ -27,7 +29,7 @@
     name: "chat",
     data () {
       return {
-        username: "phpcyy",
+        username: "",
         toUsername: '',
         socket: (function (e) {
           let socket;
@@ -38,7 +40,7 @@
             socket.addEventListener('open', function (event) {
               socket.send(JSON.stringify({
                 action: "connect",
-                user: e.username
+                token: localStorage.getItem("token")
               }));
             });
             socket.addEventListener("message", function (event) {
@@ -48,8 +50,16 @@
                 }
               });
               let message = JSON.parse(event.data);
-              message.message = marked(message.message);
-              e.messages.push(message);
+              switch (message.action) {
+                case "connected":
+                  e.username = message.username;
+                  break;
+                case "message":
+                  message.message = marked(message.message);
+                  e.messages.push(message);
+                  break;
+              }
+
             });
             socket.addEventListener("close", function () {
               socket.send(JSON.stringify({
@@ -123,8 +133,8 @@
       height: 550px;
       overflow-y: scroll;
     }
-    .message{
-      .avatar{
+    .message {
+      .avatar {
         display: inline-block;
         vertical-align: top;
         height: 30px;
@@ -142,18 +152,55 @@
         position: relative;
         display: inline-block;
         vertical-align: top;
-        &::before{
+        &::before {
           position: absolute;
           content: '';
           left: -16px;
           top: 5px;
           display: block;
-          width:0;
-          height:0;
+          width: 0;
+          height: 0;
           border-top: 8px solid #fff;
           border-right: 8px solid #fff;
           border-bottom: 8px solid transparent;
           border-left: 8px solid transparent;
+        }
+      }
+    }
+    .message-mine {
+      overflow: hidden;
+      .avatar {
+        display: inline-block;
+        vertical-align: top;
+        height: 30px;
+        width: 30px;
+        margin-top: 12px;
+        margin-left: 15px;
+        float: right;
+      }
+      .message-content {
+        background: #fff;
+        max-width: 400px;
+        margin-top: 12px;
+        margin-left: 20px;
+        padding: 3px 20px;
+        border-radius: 6px;
+        position: relative;
+        display: inline-block;
+        vertical-align: top;
+        float: right;
+        &::after {
+          position: absolute;
+          content: '';
+          right: -16px;
+          top: 5px;
+          display: block;
+          width: 0;
+          height: 0;
+          border-top: 8px solid #fff;
+          border-right: 8px solid transparent;
+          border-bottom: 8px solid transparent;
+          border-left: 8px solid #fff;
         }
       }
     }
