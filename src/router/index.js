@@ -10,7 +10,7 @@ Vue.use(Router)
 export default new Router({
   routes: [
     {
-      path: '/',
+      path: '/login',
       name: 'Login',
       component: Login
     },
@@ -20,7 +20,7 @@ export default new Router({
       component: Chat
     },
     {
-      path: '/hello',
+      path: '/',
       name: 'hello',
       component: Hello
     }
