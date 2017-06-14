@@ -35,7 +35,7 @@
       },
       previewImg (e) {
         let files = e.target.files;
-        if(files.length > 0){
+        if (files.length > 0) {
           let file = files[0];
           if (file && !/image\/\w+/.test(file.type)) {
             alert("请选择图片！")
@@ -49,15 +49,20 @@
         }
       },
       getToken (){
-          if(this.nickname.length === 0){
-              return alert("请填写昵称")
-          }
-          if (document.querySelector(".file").files.length === 0){
-            return alert("请选择头像")
-          }
-        api.file("/gettoken", {
-          nickname: this.nickname,
-          file: document.querySelector(".file").files[0]
+        if (this.nickname.length === 0) {
+          return alert("请填写昵称")
+        }
+        if (document.querySelector(".file").files.length === 0) {
+          return alert("请选择头像")
+        }
+        let scope = this
+        api.file("/getToken", {
+          username: this.nickname,
+          headimg: document.querySelector(".file").files[0]
+        }).then(function (res) {
+            console.log(res)
+          localStorage.setItem("token", res.data.token);
+          scope.$router.push({name: 'chat'});
         });
       }
     }

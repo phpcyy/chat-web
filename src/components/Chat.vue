@@ -5,12 +5,16 @@
     </div>
     <div class="message-wrapper">
       <div class="message-list">
-        <div class="message" v-for="message in messages" v-html="message">
+        <div v-for="message in messages">
+          <div class="message">
+            <img class="avatar" v-bind:src="'http://localhost:10080/' + message.headimgurl" alt="">
+            <div class="message-content" v-html="message.message">
 
+            </div>
+          </div>
         </div>
       </div>
-      <textarea class="message-box" @keyup="keyup" @keydown.tab.stop="tab">
-      </textarea>
+      <textarea class="message-box" @keyup="keyup" @keydown.tab.stop="tab"></textarea>
     </div>
   </div>
 </template>
@@ -30,7 +34,7 @@
           if (e.socket) {
             return e.socket
           } else {
-            socket = new WebSocket("ws://127.0.0.1:8888");
+            socket = new WebSocket("ws://127.0.0.1:10080/chat");
             socket.addEventListener('open', function (event) {
               socket.send(JSON.stringify({
                 action: "connect",
@@ -43,7 +47,9 @@
                   return hljs.highlightAuto(code).value;
                 }
               });
-              e.messages.push(marked(event.data));
+              let message = JSON.parse(event.data);
+              message.message = marked(message.message);
+              e.messages.push(message);
             });
             socket.addEventListener("close", function () {
               socket.send(JSON.stringify({
@@ -78,8 +84,8 @@
         if (msg.length > 0) {
           this.socket.send(JSON.stringify({
             message: msg,
+            token: localStorage.getItem("token"),
             action: "message",
-            user: this.username,
             to: this.toUsername
           }));
           document.querySelector(".message-box").value = ""
@@ -117,28 +123,41 @@
       height: 550px;
       overflow-y: scroll;
     }
-    .message {
-      background: #fff;
-      max-width: 400px;
-      margin-top: 12px;
-      margin-left: 30px;
-      padding: 3px 20px;
-      border-radius: 6px;
-      position: relative;
-      &::before{
-        position: absolute;
-        content: '';
-        left: -16px;
-        top: 10px;
-        display: block;
-        width:0;
-        height:0;
-        border-top: 16px solid #fff;
-        border-right: 16px solid #fff;
-        border-bottom: 16px solid transparent;
-        border-left: 16px solid transparent;
+    .message{
+      .avatar{
+        display: inline-block;
+        vertical-align: top;
+        height: 30px;
+        width: 30px;
+        margin-top: 12px;
+        margin-left: 15px;
+      }
+      .message-content {
+        background: #fff;
+        max-width: 400px;
+        margin-top: 12px;
+        margin-left: 20px;
+        padding: 3px 20px;
+        border-radius: 6px;
+        position: relative;
+        display: inline-block;
+        vertical-align: top;
+        &::before{
+          position: absolute;
+          content: '';
+          left: -16px;
+          top: 5px;
+          display: block;
+          width:0;
+          height:0;
+          border-top: 8px solid #fff;
+          border-right: 8px solid #fff;
+          border-bottom: 8px solid transparent;
+          border-left: 8px solid transparent;
+        }
       }
     }
+
     .message-box {
       width: 100%;
       box-sizing: border-box;

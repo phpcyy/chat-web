@@ -3,9 +3,9 @@ import querystring from 'querystring'
 
 let api = {};
 
-axios.defaults.baseURL = 'http://www.gonever.com';
+axios.defaults.baseURL = 'http://localhost:10080/';
 if (localStorage.getItem("AUTH_TOKEN")) {
-  axios.defaults.headers.common['Authorization'] = localStorage.getItem("AUTH_TOKEN");
+  axios.defaults.headers.common['Authorization'] = localStorage.getItem("token");
 }
 
 api.post = function (uri, data = {}) {
