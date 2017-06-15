@@ -1,17 +1,30 @@
 <template>
   <div id="chat">
     <div class="users">
-      <ul>
-        <li>
-
+      <div class="header">
+        <img v-bind:src="'http://localhost:10080/' + headimgurl" alt="">
+        {{username}}
+      </div>
+      <ul class="contact-list">
+        <li v-for="contact in contacts" v-bind:class="{ active: toUsername == contact.username }"
+            @click="selectTalk(contact.username, contact.headimgurl)">
+          <div class="avatar">
+            <img v-bind:src="'http://localhost:10080/' + contact.headimgurl" alt="">
+          </div>
+          <div class="prev">
+            <p>{{contact.username}}</p>
+            <p class="message">{{contact.message}}</p>
+          </div>
         </li>
       </ul>
     </div>
     <div class="message-wrapper">
-      <div class="message-list">
+      <p class="no-message" v-if="toUsername == ''">您还未选中或发起聊天，快去跟好友聊一聊吧</p>
+      <div class="message-list" v-if="toUsername != ''">
         <div v-for="message in messages">
           <div v-if="message.username != username" class="message">
-            <img class="avatar" v-bind:src="'http://localhost:10080/' + message.headimgurl" alt="">
+            <img class="avatar" v-bind:src="'http://localhost:10080/' + message.headimgurl"
+                 @click="talkTo(message.username, message.headimgurl)" alt="">
             <div class="message-content markdown-body" v-html="message.message"></div>
           </div>
           <div v-if="message.username == username" class="message-mine">
@@ -20,7 +33,7 @@
           </div>
         </div>
       </div>
-      <textarea class="message-box" @keyup="keyup" @keydown.tab.stop="tab"></textarea>
+      <textarea v-show="toUsername != ''" class="message-box" @keyup="keyup" @keydown.tab.stop="tab"></textarea>
     </div>
   </div>
 </template>
@@ -34,7 +47,11 @@
     data () {
       return {
         username: "",
-        toUsername: '',
+        headimgurl: "",
+        contacts: [],
+        toUsername: "",
+        messages: [],
+        messageLists: {},
         socket: (function (e) {
           let socket;
           if (e.socket && e.socket.readyState === 1) {
@@ -57,11 +74,11 @@
               switch (message.action) {
                 case "connected":
                   e.username = message.username;
+                  e.headimgurl = message.headimgurl;
                   break;
                 case "message":
                   message.message = marked(message.message);
                   e.messages.push(message);
-
                   break;
                 case "close":
                   localStorage.removeItem("token");
@@ -77,14 +94,23 @@
             return socket
           }
         })(this),
-        messages: []
       }
     },
     watch: {
-      messages() {
+      messages () {
         this.$nextTick(() => {
-          let list = document.querySelector(".message-list")
+          let list = document.querySelector(".message-list");
           list.scrollTop = list.scrollHeight
+        })
+      },
+      contacts () {
+        this.$nextTick(() => {
+          localStorage.setItem("contacts", JSON.stringify(this.contacts))
+        })
+      },
+      messageLists () {
+        this.$nextTick(() => {
+          localStorage.setItem("messageLists", JSON.stringify(this.messageLists))
         })
       }
     }
@@ -92,6 +118,18 @@
     mounted: function () {
       if (localStorage.getItem("token") === null) {
         location.href = '/';
+      }
+      if (localStorage.getItem("contacts") !== null) {
+        this.contacts = JSON.parse(localStorage.getItem("contacts"));
+      } else {
+        this.contacts.push({
+          username: "Go语言讨论组",
+          headimgurl: "/uploads/all.png",
+          message: "欢迎加入Go语言讨论组"
+        });
+      }
+      if (localStorage.getItem("messageLists") !== null) {
+        this.messageLists = JSON.parse(localStorage.getItem("messageLists"));
       }
     }
     ,
@@ -109,9 +147,7 @@
       {
         let el = document.querySelector('.message-box');
         let start = el.selectionStart, end = el.selectionEnd;
-
         el.value = el.value.substring(0, start) + "\t" + el.value.substring(end);
-
         el.selectionStart = el.selectionEnd = start + 1;
         e.preventDefault()
       }
@@ -128,6 +164,20 @@
           }));
           document.querySelector(".message-box").value = ""
         }
+      },
+      selectTalk(username, headimgurl){
+        this.toUsername = username;
+        this.messages = this.messageLists[username] || [];
+      },
+      talkTo(username, headimgurl){
+        this.contacts = this.contacts.filter(function (contact) {
+          return contact.username !== username
+        });
+        this.contacts.unshift({
+          username, headimgurl, message: ""
+        });
+        this.toUsername = username;
+        this.messages = this.messageLists[username] || [];
       }
     }
   }
@@ -137,6 +187,63 @@
     width: 350px;
     float: left;
     height: 800px;
+    .header {
+      background: #292B2E;
+      color: #fff;
+      line-height: 72px;
+      img {
+        display: inline-block;
+        height: 50px;
+        width: 50px;
+        margin: 0 10px;
+        border-radius: 50%;
+        vertical-align: middle;
+        line-height: 72px;
+      }
+    }
+    .contact-list {
+      background: #33353A;
+      height: 730px;
+      list-style: none;
+      box-sizing: border-box;
+      padding-top: 20px;
+      li.active {
+        background: #292B2E;
+      }
+      li {
+        height: 80px;
+        cursor: pointer;
+        border-bottom: 1px #2c2e31 solid;
+        border-top: 1px solid transparent;
+        .avatar {
+          height: 50px;
+          width: 50px;
+          border-radius: 50%;
+          margin: 15px 10px;
+          display: inline-block;
+          vertical-align: top;
+          img {
+            border-radius: 50%;
+            height: 100%;
+            width: 100%;
+          }
+        }
+        .prev {
+          height: 52px;
+          padding: 14px 0;
+          width: 250px;
+          color: #fff;
+          margin-left: 5px;
+          display: inline-block;
+          vertical-align: top;
+          .message {
+            font-size: 14px;
+            margin-top: 5px;
+            color: gray;
+          }
+        }
+      }
+    }
   }
 
   ::-webkit-scrollbar {
@@ -157,6 +264,10 @@
     float: left;
     background: #eee;
     overflow: hidden;
+    .no-message {
+      text-align: center;
+      line-height: 80px;
+    }
     .message-list {
       height: 550px;
       overflow-y: scroll;
