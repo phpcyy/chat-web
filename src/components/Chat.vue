@@ -33,7 +33,7 @@
         toUsername: '',
         socket: (function (e) {
           let socket;
-          if (e.socket) {
+          if (e.socket && e.socket.readyState === 1) {
             return e.socket
           } else {
             socket = new WebSocket("ws://127.0.0.1:10080/chat");
@@ -57,9 +57,13 @@
                 case "message":
                   message.message = marked(message.message);
                   e.messages.push(message);
+
+                  break;
+                case "close":
+                  localStorage.removeItem("token");
+                  location.href = "/";
                   break;
               }
-
             });
             socket.addEventListener("close", function () {
               socket.send(JSON.stringify({
@@ -72,15 +76,33 @@
         messages: []
       }
     },
+    watch: {
+      messages() {
+        this.$nextTick(() => {
+          let list = document.querySelector(".message-list")
+          list.scrollTop = list.scrollHeight
+        })
+      }
+    }
+    ,
+    mounted: function () {
+      if (localStorage.getItem("token") === null) {
+        location.href = '/';
+      }
+    }
+    ,
     methods: {
-      keyup (e){
+      keyup(e)
+      {
         if (e.ctrlKey && e.which === 13) {
           this.send()
         } else if (e.which === 9) {
           e.preventDefault()
         }
-      },
-      tab(e){
+      }
+      ,
+      tab(e)
+      {
         let el = document.querySelector('.message-box');
         let start = el.selectionStart, end = el.selectionEnd;
 
@@ -88,8 +110,10 @@
 
         el.selectionStart = el.selectionEnd = start + 1;
         e.preventDefault()
-      },
-      send () {
+      }
+      ,
+      send()
+      {
         let msg = document.querySelector(".message-box").value;
         if (msg.length > 0) {
           this.socket.send(JSON.stringify({
@@ -182,7 +206,7 @@
         background: #fff;
         max-width: 400px;
         margin-top: 12px;
-        margin-left: 20px;
+        margin-right: 10px;
         padding: 3px 20px;
         border-radius: 6px;
         position: relative;
