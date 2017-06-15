@@ -1,18 +1,22 @@
 <template>
   <div id="chat">
     <div class="users">
+      <ul>
+        <li>
 
+        </li>
+      </ul>
     </div>
     <div class="message-wrapper">
       <div class="message-list">
         <div v-for="message in messages">
           <div v-if="message.username != username" class="message">
             <img class="avatar" v-bind:src="'http://localhost:10080/' + message.headimgurl" alt="">
-            <div class="message-content" v-html="message.message"></div>
+            <div class="message-content markdown-body" v-html="message.message"></div>
           </div>
           <div v-if="message.username == username" class="message-mine">
             <img class="avatar" v-bind:src="'http://localhost:10080/' + message.headimgurl" alt="">
-            <div class="message-content" v-html="message.message"></div>
+            <div class="message-content markdown-body" v-html="message.message"></div>
           </div>
         </div>
       </div>
@@ -21,7 +25,7 @@
   </div>
 </template>
 <script>
-  import 'highlight.js/styles/googlecode.css' //样式文件
+  import 'highlight.js/styles/solarized-dark.css' //样式文件
   import marked from "marked"
   import hljs from "highlight.js"
 
