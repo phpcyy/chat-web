@@ -6,21 +6,21 @@
         {{username}}
       </div>
       <ul class="contact-list">
-        <li v-for="contact in contacts" v-bind:class="{ active: toUsername == contact.username }"
+        <li v-for="contact in contacts" v-bind:class="{ active: chatting == contact.username }"
             @click="selectTalk(contact.username, contact.headimgurl)">
           <div class="avatar">
             <img v-bind:src="'http://localhost:10080/' + contact.headimgurl" alt="">
           </div>
           <div class="prev">
             <p>{{contact.username}}</p>
-            <p class="message">{{contact.message}}</p>
+            <p class="message">{{contact.message.length > 20 ? contact.message.substr(0,20)+"...":contact.message}}</p>
           </div>
         </li>
       </ul>
     </div>
     <div class="message-wrapper">
-      <p class="no-message" v-if="toUsername == ''">您还未选中或发起聊天，快去跟好友聊一聊吧</p>
-      <div class="message-list" v-if="toUsername != ''">
+      <p class="no-message" v-if="chatting == ''">您还未选中或发起聊天，快去跟好友聊一聊吧</p>
+      <div class="message-list" v-if="chatting != ''">
         <div v-for="message in messages">
           <div v-if="message.username != username" class="message">
             <img class="avatar" v-bind:src="'http://localhost:10080/' + message.headimgurl"
@@ -33,7 +33,7 @@
           </div>
         </div>
       </div>
-      <textarea v-show="toUsername != ''" class="message-box" @keyup="keyup" @keydown.tab.stop="tab"></textarea>
+      <textarea v-show="chatting != ''" class="message-box" @keyup="keyup" @keydown.tab.stop="tab"></textarea>
     </div>
   </div>
 </template>
@@ -49,7 +49,7 @@
         username: "",
         headimgurl: "",
         contacts: [],
-        toUsername: "",
+        chatting: "",
         messages: [],
         messageLists: {},
         socket: (function (e) {
@@ -77,8 +77,46 @@
                   e.headimgurl = message.headimgurl;
                   break;
                 case "message":
-                  message.message = marked(message.message);
-                  e.messages.push(message);
+                  let html_encode = function (str)
+                  {
+                    let s = "";
+                    if (str.length === 0) return "";
+                    s = str.replace(/&/g, "&gt;");
+                    s = s.replace(/</g, "&lt;");
+                    s = s.replace(/>/g, "&gt;");
+                    s = s.replace(/ /g, "&nbsp;");
+                    s = s.replace(/\'/g, "&#39;");
+                    s = s.replace(/\"/g, "&quot;");
+                    s = s.replace(/\n/g, "<br>");
+                    return s;
+                  }
+                  message.message = marked(html_encode(message.message));
+                  if(message.to === e.username){
+                      e.chatting = message.username;
+                  }else{
+                      e.chatting = message.to;
+                  }
+                  let found = false;
+                  e.contacts.forEach(function (value, index) {
+                    if(value.username === e.chatting){
+                        e.contacts.splice(index, 1);
+                        value.message = message.message.replace(/<.*?>/g, "");
+                        e.contacts.unshift(value);
+                        found = true;
+                        return false;
+                    }
+                  });
+                  if(!found){
+                    e.contacts.unshift({
+                      headimgurl: message.headimgurl,
+                      username: message.username,
+                      message: message.message.replace(/<.*?>/g, "")
+                    });
+                  }
+                  e.messageLists[e.chatting] =  e.messageLists[e.chatting] || [];
+                  e.messageLists[e.chatting].push(message);
+                  localStorage.setItem("messageLists", JSON.stringify(e.messageLists))
+                  e.messages = e.messageLists[e.chatting] || [];
                   break;
                 case "close":
                   localStorage.removeItem("token");
@@ -113,8 +151,7 @@
           localStorage.setItem("messageLists", JSON.stringify(this.messageLists))
         })
       }
-    }
-    ,
+    },
     mounted: function () {
       if (localStorage.getItem("token") === null) {
         location.href = '/';
@@ -131,8 +168,7 @@
       if (localStorage.getItem("messageLists") !== null) {
         this.messageLists = JSON.parse(localStorage.getItem("messageLists"));
       }
-    }
-    ,
+    },
     methods: {
       keyup(e)
       {
@@ -141,8 +177,7 @@
         } else if (e.which === 9) {
           e.preventDefault()
         }
-      }
-      ,
+      },
       tab(e)
       {
         let el = document.querySelector('.message-box');
@@ -150,8 +185,7 @@
         el.value = el.value.substring(0, start) + "\t" + el.value.substring(end);
         el.selectionStart = el.selectionEnd = start + 1;
         e.preventDefault()
-      }
-      ,
+      },
       send()
       {
         let msg = document.querySelector(".message-box").value;
@@ -160,13 +194,13 @@
             message: msg,
             token: localStorage.getItem("token"),
             action: "message",
-            to: this.toUsername
+            to: this.chatting
           }));
           document.querySelector(".message-box").value = ""
         }
       },
       selectTalk(username, headimgurl){
-        this.toUsername = username;
+        this.chatting = username;
         this.messages = this.messageLists[username] || [];
       },
       talkTo(username, headimgurl){
@@ -176,7 +210,7 @@
         this.contacts.unshift({
           username, headimgurl, message: ""
         });
-        this.toUsername = username;
+        this.chatting = username;
         this.messages = this.messageLists[username] || [];
       }
     }

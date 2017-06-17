@@ -38,6 +38,7 @@
   html {
     font-size: 16px;
     word-break: break-all;
+    min-height: 800px;
   }
 
   body {
