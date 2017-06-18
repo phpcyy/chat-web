@@ -184,12 +184,22 @@
         this.socket = this.getSocket(this);
         let msg = document.querySelector(".message-box").value;
         if (msg.length > 0) {
-          this.socket.send(JSON.stringify({
-            message: msg,
-            token: localStorage.getItem("token"),
-            action: "message",
-            to: this.chatting
-          }));
+            try{
+              this.socket.send(JSON.stringify({
+                message: msg,
+                token: localStorage.getItem("token"),
+                action: "message",
+                to: this.chatting
+              }));
+            }catch (INVALID_STATE_ERR){
+              this.socket = this.getSocket(this);
+              this.socket.send(JSON.stringify({
+                message: msg,
+                token: localStorage.getItem("token"),
+                action: "message",
+                to: this.chatting
+              }));
+            }
           document.querySelector(".message-box").value = ""
         }
       },
