@@ -118,7 +118,8 @@
             socket.addEventListener("close", function () {
               socket.send(JSON.stringify({
                 action: "close"
-              }))
+              }));
+              e.socket = e.getSocket(e);
             });
             return socket
           }
