@@ -315,8 +315,8 @@
         margin-top: 12px;
         margin-left: 20px;
         padding: 3px 20px;
-        min-height: 10px;
-        min-width: 30px;
+        min-height: 24px;
+        min-width: 40px;
         border-radius: 6px;
         position: relative;
         display: inline-block;
