@@ -356,6 +356,8 @@
         border-radius: 6px;
         position: relative;
         display: inline-block;
+        min-height: 24px;
+        min-width: 40px;
         vertical-align: top;
         float: right;
         &::after {
