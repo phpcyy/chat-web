@@ -144,6 +144,7 @@
       }
     },
     mounted: function () {
+      this.socket = this.getSocket(this);
       if (localStorage.getItem("token") === null) {
         location.href = '/';
       }
@@ -179,9 +180,10 @@
       },
       send()
       {
+        this.socket = this.getSocket(this);
         let msg = document.querySelector(".message-box").value;
         if (msg.length > 0) {
-          this.getSocket(this).send(JSON.stringify({
+          this.socket.send(JSON.stringify({
             message: msg,
             token: localStorage.getItem("token"),
             action: "message",
