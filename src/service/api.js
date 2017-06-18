@@ -3,7 +3,7 @@ import querystring from 'querystring'
 
 let api = {};
 
-axios.defaults.baseURL = 'http://localhost:10080/';
+axios.defaults.baseURL = 'https://git.gonever.com';
 if (localStorage.getItem("AUTH_TOKEN")) {
   axios.defaults.headers.common['Authorization'] = localStorage.getItem("token");
 }

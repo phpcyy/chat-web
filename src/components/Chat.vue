@@ -2,18 +2,19 @@
   <div id="chat">
     <div class="users">
       <div class="header">
-        <img v-bind:src="'http://localhost:10080/' + headimgurl" alt="">
+        <img v-bind:src="domain + headimgurl" alt="">
         {{username}}
       </div>
       <ul class="contact-list">
         <li v-for="contact in contacts" v-bind:class="{ active: chatting == contact.username }"
             @click="selectTalk(contact.username, contact.headimgurl)">
           <div class="avatar">
-            <img v-bind:src="'http://localhost:10080/' + contact.headimgurl" alt="">
+            <img v-bind:src="domain + contact.headimgurl" alt="">
           </div>
           <div class="prev">
             <p>{{contact.username}}</p>
-            <p class="message">{{contact.message.length > 20 ? contact.message.substr(0,20)+"...":contact.message}}</p>
+            <p class="message">
+              {{contact.message.length > 20 ? contact.message.substr(0, 20) + "..." : contact.message}}</p>
           </div>
         </li>
       </ul>
@@ -23,12 +24,12 @@
       <div class="message-list" v-if="chatting != ''">
         <div v-for="message in messages">
           <div v-if="message.username != username" class="message">
-            <img class="avatar" v-bind:src="'http://localhost:10080/' + message.headimgurl"
+            <img class="avatar" v-bind:src="domain + message.headimgurl"
                  @click="talkTo(message.username, message.headimgurl)" alt="">
             <div class="message-content markdown-body" v-html="message.message"></div>
           </div>
           <div v-if="message.username == username" class="message-mine">
-            <img class="avatar" v-bind:src="'http://localhost:10080/' + message.headimgurl" alt="">
+            <img class="avatar" v-bind:src="domain + message.headimgurl" alt="">
             <div class="message-content markdown-body" v-html="message.message"></div>
           </div>
         </div>
@@ -46,18 +47,21 @@
     name: "chat",
     data () {
       return {
+        domain: "https://git.gonever.com",
+        wsURL: "wss://git.gonever.com/chat",
         username: "",
         headimgurl: "",
         contacts: [],
         chatting: "",
         messages: [],
         messageLists: {},
-        socket: (function (e) {
+        socket: "",
+        getSocket: function (e) {
           let socket;
           if (e.socket && e.socket.readyState === 1) {
             return e.socket
           } else {
-            socket = new WebSocket("ws://127.0.0.1:10080/chat");
+            socket = new WebSocket(e.wsURL);
             socket.addEventListener('open', function (event) {
               socket.send(JSON.stringify({
                 action: "connect",
@@ -77,43 +81,30 @@
                   e.headimgurl = message.headimgurl;
                   break;
                 case "message":
-                  let html_encode = function (str)
-                  {
-                    let s = "";
-                    if (str.length === 0) return "";
-                    s = str.replace(/&/g, "&gt;");
-                    s = s.replace(/</g, "&lt;");
-                    s = s.replace(/>/g, "&gt;");
-                    s = s.replace(/ /g, "&nbsp;");
-                    s = s.replace(/\'/g, "&#39;");
-                    s = s.replace(/\"/g, "&quot;");
-                    s = s.replace(/\n/g, "<br>");
-                    return s;
-                  }
-                  message.message = marked(html_encode(message.message));
-                  if(message.to === e.username){
-                      e.chatting = message.username;
-                  }else{
-                      e.chatting = message.to;
+                  message.message = marked(message.message);
+                  if (message.to === e.username) {
+                    e.chatting = message.username;
+                  } else {
+                    e.chatting = message.to;
                   }
                   let found = false;
                   e.contacts.forEach(function (value, index) {
-                    if(value.username === e.chatting){
-                        e.contacts.splice(index, 1);
-                        value.message = message.message.replace(/<.*?>/g, "");
-                        e.contacts.unshift(value);
-                        found = true;
-                        return false;
+                    if (value.username === e.chatting) {
+                      e.contacts.splice(index, 1);
+                      value.message = message.message.replace(/<.*?>/g, "");
+                      e.contacts.unshift(value);
+                      found = true;
+                      return false;
                     }
                   });
-                  if(!found){
+                  if (!found) {
                     e.contacts.unshift({
                       headimgurl: message.headimgurl,
                       username: message.username,
                       message: message.message.replace(/<.*?>/g, "")
                     });
                   }
-                  e.messageLists[e.chatting] =  e.messageLists[e.chatting] || [];
+                  e.messageLists[e.chatting] = e.messageLists[e.chatting] || [];
                   e.messageLists[e.chatting].push(message);
                   localStorage.setItem("messageLists", JSON.stringify(e.messageLists))
                   e.messages = e.messageLists[e.chatting] || [];
@@ -131,7 +122,7 @@
             });
             return socket
           }
-        })(this),
+        },
       }
     },
     watch: {
@@ -190,7 +181,7 @@
       {
         let msg = document.querySelector(".message-box").value;
         if (msg.length > 0) {
-          this.socket.send(JSON.stringify({
+          this.getSocket(this).send(JSON.stringify({
             message: msg,
             token: localStorage.getItem("token"),
             action: "message",
