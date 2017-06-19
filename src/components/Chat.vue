@@ -232,7 +232,7 @@
     float: left;
     height: 800px;
     .header {
-      background: #292B2E;
+      background: #272727;
       color: #fff;
       line-height: 72px;
       img {
@@ -426,6 +426,7 @@
       padding: 5px 10px;
       line-height: 1.6;
       font-size: inherit;
+      font-family: "SFMono-Regular", Consolas, "Liberation Mono", Menlo, Courier, monospace;;
       resize: none;
     }
   }
