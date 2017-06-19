@@ -327,6 +327,7 @@
         vertical-align: top;
         height: 36px;
         width: 36px;
+        cursor: pointer;
         margin-top: 12px;
         margin-left: 15px;
       }
