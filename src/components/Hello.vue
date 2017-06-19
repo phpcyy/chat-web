@@ -1,6 +1,6 @@
 <template>
   <div class="hello">
-    <h1>Go 语言聊天室</h1>
+    <h1>Code Chat</h1>
     <div class="form">
       <div class="form-control">
         <input type="text" v-model.trim="nickname" placeholder="输入您的昵称">
@@ -60,7 +60,6 @@
           username: this.nickname,
           headimg: document.querySelector(".file").files[0]
         }).then(function (res) {
-            console.log(res)
           localStorage.setItem("token", res.data.token);
           scope.$router.push({name: 'chat'});
         });

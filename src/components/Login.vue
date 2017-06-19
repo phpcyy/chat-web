@@ -1,7 +1,7 @@
 <template>
   <div id="login">
     <div class="login" v-show="status == 1">
-      <h1>登录 LetChat</h1>
+      <h1>登录 CodeChat</h1>
       <div class="form">
         <div class="form-control">
           <input type="text" v-model="email" placeholder="邮箱">
