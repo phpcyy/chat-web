@@ -14,7 +14,7 @@
           <div class="prev">
             <p>{{contact.username}}</p>
             <p class="message">
-              {{contact.message.length > 20 ? contact.message.substr(0, 20) + "..." : contact.message}}</p>
+              {{contact.message}}</p>
           </div>
         </li>
       </ul>
@@ -26,11 +26,17 @@
           <div v-if="message.username != username" class="message">
             <img class="avatar" v-bind:src="domain + message.headimgurl"
                  @click="talkTo(message.username, message.headimgurl)" alt="">
-            <div class="message-content markdown-body" v-html="message.message"></div>
+            <div class="message-body">
+              <div class="username" v-text="message.username"></div>
+              <div class="message-content markdown-body" v-html="message.message"></div>
+            </div>
           </div>
           <div v-if="message.username == username" class="message-mine">
             <img class="avatar" v-bind:src="domain + message.headimgurl" alt="">
-            <div class="message-content markdown-body" v-html="message.message"></div>
+            <div class="message-body">
+              <div class="username" v-text="message.username"></div>
+              <div class="message-content markdown-body" v-html="message.message"></div>
+            </div>
           </div>
         </div>
       </div>
@@ -278,6 +284,9 @@
             font-size: 14px;
             margin-top: 5px;
             color: gray;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
           }
         }
       }
@@ -308,41 +317,51 @@
     }
     .message-list {
       height: 550px;
+      box-sizing: border-box;
+      padding-bottom: 10px;
       overflow-y: scroll;
     }
     .message {
       .avatar {
         display: inline-block;
         vertical-align: top;
-        height: 30px;
-        width: 30px;
+        height: 36px;
+        width: 36px;
         margin-top: 12px;
         margin-left: 15px;
       }
-      .message-content {
-        background: #fff;
-        max-width: 400px;
-        margin-top: 12px;
-        margin-left: 20px;
-        padding: 3px 20px;
-        min-height: 24px;
-        min-width: 40px;
-        border-radius: 6px;
-        position: relative;
+      .message-body{
+        margin-top: 4px;
         display: inline-block;
         vertical-align: top;
-        &::before {
-          position: absolute;
-          content: '';
-          left: -16px;
-          top: 5px;
-          display: block;
-          width: 0;
-          height: 0;
-          border-top: 8px solid #fff;
-          border-right: 8px solid #fff;
-          border-bottom: 8px solid transparent;
-          border-left: 8px solid transparent;
+        .username{
+          font-size: 14px;
+          color: gray;
+          margin-bottom: 4px;
+          margin-left: 12px;
+        }
+        .message-content {
+          margin-left: 20px;
+          background: #fff;
+          max-width: 400px;
+          padding: 3px 20px;
+          min-height: 24px;
+          min-width: 40px;
+          border-radius: 6px;
+          position: relative;
+          &::before {
+            position: absolute;
+            content: '';
+            left: -16px;
+            top: 5px;
+            display: block;
+            width: 0;
+            height: 0;
+            border-top: 8px solid #fff;
+            border-right: 8px solid #fff;
+            border-bottom: 8px solid transparent;
+            border-left: 8px solid transparent;
+          }
         }
       }
     }
@@ -351,37 +370,48 @@
       .avatar {
         display: inline-block;
         vertical-align: top;
-        height: 30px;
-        width: 30px;
+        height: 36px;
+        width: 36px;
         margin-top: 12px;
         margin-left: 15px;
         float: right;
       }
-      .message-content {
-        background: #fff;
-        max-width: 400px;
-        margin-top: 12px;
-        margin-right: 10px;
-        padding: 3px 20px;
-        border-radius: 6px;
-        position: relative;
+      .message-body {
+        margin-top: 4px;
         display: inline-block;
-        min-height: 24px;
-        min-width: 40px;
         vertical-align: top;
         float: right;
-        &::after {
-          position: absolute;
-          content: '';
-          right: -16px;
-          top: 5px;
-          display: block;
-          width: 0;
-          height: 0;
-          border-top: 8px solid #fff;
-          border-right: 8px solid transparent;
-          border-bottom: 8px solid transparent;
-          border-left: 8px solid #fff;
+        .username {
+          font-size: 14px;
+          color: gray;
+          margin-bottom: 4px;
+          margin-right: 12px;
+          text-align: right;
+        }
+        .message-content {
+          background: #fff;
+          max-width: 400px;
+          margin-right: 10px;
+          padding: 3px 20px;
+          border-radius: 6px;
+          position: relative;
+          display: inline-block;
+          min-height: 24px;
+          min-width: 40px;
+          vertical-align: top;
+          &::after {
+            position: absolute;
+            content: '';
+            right: -16px;
+            top: 5px;
+            display: block;
+            width: 0;
+            height: 0;
+            border-top: 8px solid #fff;
+            border-right: 8px solid transparent;
+            border-bottom: 8px solid transparent;
+            border-left: 8px solid #fff;
+          }
         }
       }
     }
